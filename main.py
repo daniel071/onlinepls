@@ -1,5 +1,6 @@
 import discord
 import os
+import json
 import random
 import asyncio
 from mcrcon import MCRcon as r
@@ -66,7 +67,7 @@ async def on_ready():
 @bot.command()
 async def help(ctx):
 	embed=discord.Embed(title="All commands", description='Use the prefix "pls" to use them!')
-	embed.set_author(name="Version: v1.0.0", url="https://github.com/daniel071/onlinepls")
+	embed.set_author(name="Version: v1.1.0", url="https://github.com/daniel071/onlinepls")
 	embed.add_field(name="pls online", value="Starts the server", inline=False)
 	embed.add_field(name="pls offline", value="Stops the server (Admins only)", inline=False)
 	embed.add_field(name="pls help", value="Displays this message", inline=False)
@@ -82,8 +83,8 @@ async def online(ctx):
 	except ConnectionRefusedError:
 		await ctx.channel.send(":white_check_mark: " + infoMessage)
 		os.system('''
-        gnome-terminal -e 'sh -c  "cd /home/daniel/Minecraft/arentnav; source ./start.sh"'
-		''')
+        gnome-terminal -e 'sh -c  "cd {mcDirectory}; source ./start.sh"'
+		'''.format(mcDirectory=os.getenv('mcDirectory')))
 	else:
 		await ctx.channel.send(":triumph: Server is already online... SMH ")
 
@@ -91,7 +92,7 @@ async def online(ctx):
 
 @bot.command()
 async def offline(ctx):
-	if ctx.author.id == os.getenv('OWNER_ID') or ctx.author.id == os.getenv('OWNER_TWO_ID'):
+	if ctx.author.id in json.loads(os.getenv('ADMINS')):
 		infoMessage = random.choice(compliments)
 
 		try:
