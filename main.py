@@ -114,10 +114,11 @@ async def on_message(ctx):
 
 @bot.event
 async def on_command_error(ctx, error):
-    if isinstance(error, CommandNotFound):
-        await ctx.channel.send(":angry: You know this command doesn't exist, right? LLLLL")
-    else:
-        await ctx.channel.send(":flushed: Looks like Daniel f*cked up something again. Pls spam his DMs so he fixes it!!")
+	if isinstance(error, CommandNotFound):
+		await ctx.channel.send(":angry: You know this command doesn't exist, right? LLLLL")
+	else:
+		await ctx.channel.send(":flushed: Looks like Daniel f*cked up something again. Pls spam his DMs so he fixes it!!")
+		await ctx.channel.send("```{error}```".format(error=error))
 
 
 
