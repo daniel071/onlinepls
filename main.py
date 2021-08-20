@@ -8,12 +8,18 @@ from discord.ext import commands
 from discord.ext.commands import CommandNotFound
 from discord.ext.commands import CommandError
 from dotenv import load_dotenv
+from colorama import init
+from colorama import Fore, Back, Style
 
 # TODO:
-# - Make bot recover from restart, continuing to edit all existing messages
-# - Add configuration to change settings for each specific server, such as time
-#   to update message
+# - Add status command (pls status)
+# - Fix gnome-terminal command when
+# - Add README
+# - Add Windows support
+# - Improve responsiveness
+# - Add cool text output
 
+init()
 load_dotenv()
 
 complimentsText = '''
@@ -50,7 +56,7 @@ I need help, teach me how to play!
 Can you paint with all the colors of the wind
 '''
 compliments = complimentsText.splitlines()
-bot = commands.Bot(command_prefix='pls ', help_command=None)
+bot = commands.Bot(command_prefix=["pls ","Pls ","PLS ","please ","Please ","PLease ","PLEASE ", "pwease ", "Pwease ", "PWEASE "], help_command=None)
 
 async def is_owner(ctx):
 	if ctx.author.id == os.getenv('OWNER_ID'):
@@ -84,7 +90,7 @@ async def online(ctx):
 		await ctx.channel.send(":white_check_mark: " + infoMessage)
 		os.system('''
         gnome-terminal -e 'sh -c  "cd {mcDirectory}; source ./start.sh"'
-		'''.format(mcDirectory=os.getenv('mcDirectory')))
+		'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
 	else:
 		await ctx.channel.send(":triumph: Server is already online... SMH ")
 
@@ -92,7 +98,7 @@ async def online(ctx):
 
 @bot.command()
 async def offline(ctx):
-	if ctx.author.id in json.loads(os.getenv('ADMINS')):
+	if str(ctx.author.id) in json.loads(os.getenv('ADMINS')):
 		infoMessage = random.choice(compliments)
 
 		try:
@@ -103,15 +109,41 @@ async def offline(ctx):
 		else:
 			await ctx.channel.send(":x: " + infoMessage)
 	else:
-		await ctx.channel.send("I'm sorry Dave, I'm afraid I can't do that.")
+		# A friend asked me to add this feature, not me. So I added it.
+		# This will run if you are not allowed to run the command.
+		if "pls offline" == ctx.message.content.lower():
+			await ctx.channel.send("Ahem. Please use correct English grammar. Please say Please instead of 'pls'. Thank you Aarnav.")
+		elif "please offline" == ctx.message.content.lower():
+			await ctx.channel.send("Actually, add an 'uwu' to the end of that for my amusement. Thank you.")
+		elif "please offline uwu" == ctx.message.content.lower():
+			await ctx.channel.send("One UwU is great and all, but I want more, Aarnav. I want you to add an extra owo on the end of that as well.")
+		elif "please offline uwu owo" == ctx.message.content.lower():
+			await ctx.channel.send("Almost there. Now translate it to furry talk")
+		elif "pwease offline mowde pwweaase daddy ~" == ctx.message.content.lower():
+			await ctx.channel.send("Perfect. Now, the last step is to admit that you are a homosexual.")
+			await asyncio.sleep(3)
+			await ctx.channel.send("Say 'pwease offline mowde pwweaase daddy ~' followed by your admission.")
+		elif "homosexual" in ctx.message.content.lower() and "no" not in ctx.message.content.lower() and "not" not in ctx.message.content.lower():
+			await ctx.channel.send("Excellent. Please wait 10 seconds while I shut down the server... :smile:")
+			await asyncio.sleep(10)
+			await ctx.channel.send("You throught this was an offline command? Lied to!! Trolled!!!")
+		else:
+			await ctx.channel.send("You fucked it up Aarnav. Now do it all over again.")
+
+		# await ctx.channel.send("I'm sorry Dave, I'm afraid I can't do that.")
 
 
 @bot.event
 async def on_message(ctx):
-    if bot.user.mentioned_in(ctx):
-        await ctx.channel.send("You can type 'pls help' for more info")
+	if bot.user.mentioned_in(ctx):
+		if "online" in ctx.message.content.lower():
+			online(ctx)
+		elif "offline" in ctx.message.content.lower():
+			offline(ctx)
+		else:
+			await ctx.channel.send("You can type 'pls help' for more info")
 
-    await bot.process_commands(ctx)
+	await bot.process_commands(ctx)
 
 @bot.event
 async def on_command_error(ctx, error):
