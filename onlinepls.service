@@ -4,8 +4,7 @@ Requires=network-online.target
 
 [Service]
 Type=simple
-User=daniel
-ExecStart=/usr/bin/python /home/daniel/code/onlinepls/main.py
+ExecStart=/usr/bin/python /etc/onlinepls/main.py
 
 [Install]
 WantedBy=multi-user.target
