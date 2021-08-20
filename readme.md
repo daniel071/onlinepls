@@ -22,15 +22,17 @@ Automated installation script coming soon ™
 **Manual install**
 ```sh
 # Main files
-sudo su
-cd /etc/
+mkdir ~/.config/systemd/
+mkdir ~/.config/systemd/user
+
+cd ~/.local/share/
 git clone https://github.com/daniel071/onlinepls.git; cd onlinepls
 mv .env-template .env
 
 # Optional: If you want systemd intergration
-mv onlinepls.service /lib/systemd/system/onlinepls.service
+mv onlinepls.service ~/.config/systemd/user
 systemctl daemon-reload
-systemctl enable onlinepls
+systemctl --user enable onlinepls
 
 ## systemd commands you can run to manage the service
 # systemctl start onlinepls
@@ -46,3 +48,4 @@ Should work on these operating systems, just make sure to replace the gnome-term
 # Troubleshooting
 - `Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions` If you got this error, make sure the bot has corrent permissions (it needs embed, send and recieve perms)
 - Java cannot find server jar: Make sure that your start script is using an absolute path (e.g. `/home/daniel/Minecraft/start.sh`) instead of a relative path (e.g. `./start.sh`)
+-  `gnome-terminal: Unable to init server: Could not connect: Connection refused` Make sure you ran the systemd service as your user (--user)
