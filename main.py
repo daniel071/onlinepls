@@ -13,11 +13,11 @@ from colorama import Fore, Back, Style
 
 # TODO:
 # - Add status command (pls status)
-# - Fix gnome-terminal command when
 # - Add README
 # - Add Windows support
-# - Improve responsiveness
-# - Add cool text output
+# - Add install script
+# - maybe put on AUR?
+# - Fix gnome-terminal not working via systemd
 
 init()
 load_dotenv()
@@ -56,6 +56,16 @@ I need help, teach me how to play!
 Can you paint with all the colors of the wind
 '''
 compliments = complimentsText.splitlines()
+
+class c:
+	reset = Style.RESET_ALL
+	status = Style.BRIGHT + Fore.BLUE + ":: " + Fore.WHITE
+	error = Style.BRIGHT + Fore.RED + "[!]" + Fore.WHITE
+	warning = Fore.YELLOW + Fore.RED + "[?]" + Fore.WHITE
+	misc = Style.DIM
+
+
+print(c.status + "Bot starting..." + c.reset)
 bot = commands.Bot(command_prefix=["pls ","Pls ","PLS ","please ","Please ","PLease ","PLEASE ", "pwease ", "Pwease ", "PWEASE "], help_command=None)
 
 async def is_owner(ctx):
@@ -66,9 +76,13 @@ async def is_owner(ctx):
 
 @bot.event
 async def on_ready():
+	print("")
+	print(c.status + "Bot started!" + c.reset)
+
 	servers = list(bot.guilds)
 	print(f"Connected on {str(len(servers))} servers:")
 	print('\n'.join(server.name for server in servers))
+	print("")
 
 @bot.command()
 async def help(ctx):
@@ -82,15 +96,16 @@ async def help(ctx):
 @bot.command()
 async def online(ctx):
 	infoMessage = random.choice(compliments)
-
+	await ctx.channel.send(infoMessage)
 	try:
 		with r('localhost', os.getenv('RCON_PASS')) as mcr:
 			pass
 	except ConnectionRefusedError:
-		await ctx.channel.send(":white_check_mark: " + infoMessage)
+		await ctx.channel.send(":white_check_mark: Server started!")
 		os.system('''
-        gnome-terminal -e 'sh -c  "cd {mcDirectory}; source ./start.sh"'
+        gnome-terminal -- sh -c "cd {mcDirectory}; source ./start.sh"
 		'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
+		print(c.misc + ctx.author.name + "has started the server")
 	else:
 		await ctx.channel.send(":triumph: Server is already online... SMH ")
 
@@ -100,14 +115,16 @@ async def online(ctx):
 async def offline(ctx):
 	if str(ctx.author.id) in json.loads(os.getenv('ADMINS')):
 		infoMessage = random.choice(compliments)
+		await ctx.channel.send(infoMessage)
 
 		try:
 			with r('localhost', os.getenv('RCON_PASS')) as mcr:
 				resp = mcr.command('stop')
+			print(c.misc + ctx.author.name + "has stopped the server")
 		except ConnectionRefusedError:
 			await ctx.channel.send(":triumph: Imagine trying to stop a server that is already offline... ")
 		else:
-			await ctx.channel.send(":x: " + infoMessage)
+			await ctx.channel.send(":x: Server stopped!")
 	else:
 		# A friend asked me to add this feature, not me. So I added it.
 		# This will run if you are not allowed to run the command.
@@ -137,9 +154,9 @@ async def offline(ctx):
 async def on_message(ctx):
 	if bot.user.mentioned_in(ctx):
 		if "online" in ctx.message.content.lower():
-			online(ctx)
+			await online(ctx)
 		elif "offline" in ctx.message.content.lower():
-			offline(ctx)
+			await offline(ctx)
 		else:
 			await ctx.channel.send("You can type 'pls help' for more info")
 
@@ -150,6 +167,7 @@ async def on_command_error(ctx, error):
 	if isinstance(error, CommandNotFound):
 		await ctx.channel.send(":angry: You know this command doesn't exist, right? LLLLL")
 	else:
+		print(c.error + "An unhandled error has occured." + c.reset + error)
 		await ctx.channel.send(":flushed: Looks like Daniel f*cked up something again. Pls spam his DMs so he fixes it!!")
 		await ctx.channel.send("```{error}```".format(error=error))
 
