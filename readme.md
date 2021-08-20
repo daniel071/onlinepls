@@ -31,14 +31,14 @@ mv .env-template .env
 
 # Optional: If you want systemd intergration
 mv onlinepls.service ~/.config/systemd/user
-systemctl daemon-reload
 systemctl --user enable onlinepls
 
 ## systemd commands you can run to manage the service
-# systemctl start onlinepls
-# systemctl stop onlinepls
-# systemctl enable onlinepls
-# systemctl disable onlinepls
+# systemctl --user start onlinepls
+# systemctl --user stop onlinepls
+# systemctl --user enable onlinepls
+# systemctl --user disable onlinepls
+# systemctl --user status onlinepls
 ```
 Now edit the .env file (with an editor of your choice, eg `nano .env`) and fill it in with the information you gathered previously.
 
@@ -49,3 +49,4 @@ Should work on these operating systems, just make sure to replace the gnome-term
 - `Command raised an exception: Forbidden: 403 Forbidden (error code: 50013): Missing Permissions` If you got this error, make sure the bot has corrent permissions (it needs embed, send and recieve perms)
 - Java cannot find server jar: Make sure that your start script is using an absolute path (e.g. `/home/daniel/Minecraft/start.sh`) instead of a relative path (e.g. `./start.sh`)
 -  `gnome-terminal: Unable to init server: Could not connect: Connection refused` Make sure you ran the systemd service as your user (--user)
+- `The unit file, source configuration file or drop-ins of onlinepls.service changed on disk.` Run `systemctl --user daemon-reload`

@@ -105,7 +105,7 @@ async def online(ctx):
 		os.system('''
         gnome-terminal -- sh -c "cd {mcDirectory}; source ./start.sh"
 		'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
-		print(c.misc + ctx.author.name + "has started the server")
+		print(c.misc + ctx.author.name + " has started the server" + c.reset)
 	else:
 		await ctx.channel.send(":triumph: Server is already online... SMH ")
 
@@ -120,7 +120,7 @@ async def offline(ctx):
 		try:
 			with r('localhost', os.getenv('RCON_PASS')) as mcr:
 				resp = mcr.command('stop')
-			print(c.misc + ctx.author.name + "has stopped the server")
+			print(c.misc + ctx.author.name + " has stopped the server" + c.reset)
 		except ConnectionRefusedError:
 			await ctx.channel.send(":triumph: Imagine trying to stop a server that is already offline... ")
 		else:

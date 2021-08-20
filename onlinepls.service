@@ -1,10 +1,9 @@
 [Unit]
 Description=Online Pls Discord Bot
-Requires=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python ~/.local/share/onlinepls/main.py
+ExecStart=/usr/bin/python .local/share/onlinepls/main.py
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
