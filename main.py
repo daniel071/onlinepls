@@ -13,11 +13,11 @@ from colorama import Fore, Back, Style
 
 # TODO:
 # - Add status command (pls status)
-# - Add README
 # - Add Windows support
 # - Add install script
 # - maybe put on AUR?
-# - Fix gnome-terminal not working via systemd
+# - One central bot account for easier setup? - privacy + security issues with this approach however
+# - Improve responsiveness, don't rely on rcon for everything
 
 init()
 load_dotenv()
@@ -102,9 +102,15 @@ async def online(ctx):
 			pass
 	except ConnectionRefusedError:
 		await ctx.channel.send(":white_check_mark: Server started!")
-		os.system('''
-        gnome-terminal -- sh -c "cd {mcDirectory}; source ./start.sh"
-		'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
+		if os.getenv('MC_HEADLESS') == 'true':
+			os.system('''
+	        cd {mcDirectory}; source ./start.sh"
+			'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
+		else:
+			os.system('export DISPLAY=:0.0')
+			os.system('''
+	        gnome-terminal -- sh -c "cd {mcDirectory}; source ./start.sh"
+			'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
 		print(c.misc + ctx.author.name + " has started the server" + c.reset)
 	else:
 		await ctx.channel.send(":triumph: Server is already online... SMH ")
