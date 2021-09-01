@@ -61,6 +61,7 @@ class c:
 	reset = Style.RESET_ALL
 	status = Style.BRIGHT + Fore.BLUE + ":: " + Fore.WHITE
 	error = Style.BRIGHT + Fore.RED + "[!]" + Fore.WHITE
+	important = Style.BRIGHT + Fore.YELLOW + "[!]" + Fore.WHITE
 	warning = Fore.YELLOW + Fore.RED + "[?]" + Fore.WHITE
 	misc = Style.DIM
 
@@ -104,13 +105,17 @@ async def online(ctx):
 		await ctx.channel.send(":white_check_mark: Server started!")
 		if os.getenv('MC_HEADLESS') == 'true':
 			os.system('''
-	        cd {mcDirectory}; source ./start.sh"
+	        cd {mcDirectory}; source ./start.sh
 			'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
 		else:
-			os.system('export DISPLAY=:0.0')
-			os.system('''
-	        gnome-terminal -- sh -c "cd {mcDirectory}; source ./start.sh"
-			'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
+			command = '''
+			gnome-terminal -- sh -c 'export DISPLAY=:0.0; cd {mcDirectory}; source ./start.sh'
+			'''.format(mcDirectory=os.getenv('MC_DIRECTORY'))
+			if os.system(command) != 0:
+				print(c.important + " gnome-terminal command failed! Falling back to headless shell!" + c.reset)
+				os.system('''
+		        cd {mcDirectory}; source ./start.sh
+				'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
 		print(c.misc + ctx.author.name + " has started the server" + c.reset)
 	else:
 		await ctx.channel.send(":triumph: Server is already online... SMH ")
