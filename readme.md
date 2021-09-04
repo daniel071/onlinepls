@@ -43,14 +43,17 @@ systemctl --user enable onlinepls
 ```
 Now edit the .env file (with an editor of your choice, eg `nano .env`) and fill it in with the information you gathered previously.
 
-Headless mode: Tmux
+### Headless mode: Tmux
+
 **Make sure you installed tmux through your package manager for this to work**
+
 If set to run the server in the background, it will use *tmux*.
 Run `tmux a -t mc` in your terminal to access the server at any time.
 Press Ctrl and B. Then let go. Then press one of these keys to perform an action
 - `%` : Create a split screen horizontally
 - `"` : Create a split screen vertically
 - `d` : Detach from shell - server will continue to run in the background
+
 Want more info? Have a look at [this guide](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)
 
 ## MacOS + Windows
