@@ -105,7 +105,7 @@ async def online(ctx):
 		await ctx.channel.send(":white_check_mark: Server started!")
 		if os.getenv('MC_HEADLESS') == 'true':
 			os.system('''
-	        cd {mcDirectory}; source ./start.sh
+	        tmux new-session -d -s "mc" "cd {mcDirectory}; source ./start.sh"
 			'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
 		else:
 			command = '''
@@ -114,7 +114,7 @@ async def online(ctx):
 			if os.system(command) != 0:
 				print(c.important + " gnome-terminal command failed! Falling back to headless shell!" + c.reset)
 				os.system('''
-		        cd {mcDirectory}; source ./start.sh
+		        tmux new-session -d -s "mc" "cd {mcDirectory}; source ./start.sh"
 				'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
 		print(c.misc + ctx.author.name + " has started the server" + c.reset)
 	else:
@@ -164,9 +164,9 @@ async def offline(ctx):
 @bot.event
 async def on_message(ctx):
 	if bot.user.mentioned_in(ctx):
-		if "online" in ctx.message.content.lower():
+		if "online" in ctx.content.lower():
 			await online(ctx)
-		elif "offline" in ctx.message.content.lower():
+		elif "offline" in ctx.content.lower():
 			await offline(ctx)
 		else:
 			await ctx.channel.send("You can type 'pls help' for more info")
