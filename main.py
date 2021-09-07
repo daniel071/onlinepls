@@ -3,6 +3,7 @@ import os
 import json
 import random
 import asyncio
+import re
 from mcrcon import MCRcon as r
 from discord.ext import commands
 from discord.ext.commands import CommandNotFound
@@ -91,6 +92,7 @@ async def help(ctx):
 	embed.set_author(name="Version: v1.1.0", url="https://github.com/daniel071/onlinepls")
 	embed.add_field(name="pls online", value="Starts the server", inline=False)
 	embed.add_field(name="pls offline", value="Stops the server (Admins only)", inline=False)
+	embed.add_field(name="pls status", value="Displays server status", inline=False)
 	embed.add_field(name="pls help", value="Displays this message", inline=False)
 	await ctx.channel.send(embed=embed)
 
@@ -102,11 +104,11 @@ async def online(ctx):
 		with r('localhost', os.getenv('RCON_PASS')) as mcr:
 			pass
 	except ConnectionRefusedError:
-		await ctx.channel.send(":white_check_mark: Server started!")
 		if os.getenv('MC_HEADLESS') == 'true':
 			os.system('''
 	        tmux new-session -d -s "mc" "cd {mcDirectory}; source ./start.sh"
 			'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
+			await ctx.channel.send(":white_check_mark: Server started!")
 		else:
 			command = '''
 			gnome-terminal -- sh -c 'export DISPLAY=:0.0; cd {mcDirectory}; source ./start.sh'
@@ -116,6 +118,10 @@ async def online(ctx):
 				os.system('''
 		        tmux new-session -d -s "mc" "cd {mcDirectory}; source ./start.sh"
 				'''.format(mcDirectory=os.getenv('MC_DIRECTORY')))
+				await ctx.channel.send(":white_check_mark: Server started! :flushed:")
+			else:
+				await ctx.channel.send(":white_check_mark: Server started!")
+
 		print(c.misc + ctx.author.name + " has started the server" + c.reset)
 	else:
 		await ctx.channel.send(":triumph: Server is already online... SMH ")
@@ -130,7 +136,7 @@ async def offline(ctx):
 
 		try:
 			with r('localhost', os.getenv('RCON_PASS')) as mcr:
-				resp = mcr.command('stop')
+				resp = mcr.command("stop")
 			print(c.misc + ctx.author.name + " has stopped the server" + c.reset)
 		except ConnectionRefusedError:
 			await ctx.channel.send(":triumph: Imagine trying to stop a server that is already offline... ")
@@ -161,6 +167,40 @@ async def offline(ctx):
 		# await ctx.channel.send("I'm sorry Dave, I'm afraid I can't do that.")
 
 
+@bot.command()
+async def status(ctx):
+	infoMessage = random.choice(compliments)
+	await ctx.channel.send(infoMessage)
+	try:
+		with r('localhost', os.getenv('RCON_PASS')) as mcr:
+			serverList = mcr.command("list")
+			serverVer = mcr.command("ver")
+			try:
+				serverVerSplit = re.findall("\((.*?)\)", serverVer)
+				serverVerSplitString = serverVerSplit[0]
+				unformattedVer = serverVerSplitString.replace("(", "")
+				formattedVer = unformattedVer.replace(")", "")
+			except IndexError:
+				formattedVer = "Checking version..."
+
+	except ConnectionRefusedError:
+		satmessage = """
+		**Current Server Status**
+		Server online: :x:
+		"""
+		await ctx.channel.send(satmessage)
+
+	else:
+		satmessage = """
+		**Current Server Status**
+		Server online: :white_check_mark:
+		Server version: **{ver}**
+		{players}
+		""".format(ver=formattedVer, players=serverList)
+
+		await ctx.channel.send(satmessage)
+
+
 @bot.event
 async def on_message(ctx):
 	if bot.user.mentioned_in(ctx):
@@ -178,7 +218,7 @@ async def on_command_error(ctx, error):
 	if isinstance(error, CommandNotFound):
 		await ctx.channel.send(":angry: You know this command doesn't exist, right? LLLLL")
 	else:
-		print(c.error + "An unhandled error has occured." + c.reset + error)
+		print(c.error, "An unhandled error has occured.", c.reset, error)
 		await ctx.channel.send(":flushed: Looks like Daniel f*cked up something again. Pls spam his DMs so he fixes it!!")
 		await ctx.channel.send("```{error}```".format(error=error))
 
