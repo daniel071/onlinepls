@@ -6,7 +6,7 @@ onlinepls is a discord bot that can remotely start, stop and show status of mine
 - start/stop commands
 - systemd intergration
 - tmux intergration
-- (coming soon) status commands
+- status commands
 - (coming soon) easy installation
 
 # Installation
