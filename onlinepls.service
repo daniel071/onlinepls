@@ -6,4 +6,4 @@ Type=simple
 ExecStart=/usr/bin/python .local/share/onlinepls/main.py
 
 [Install]
-WantedBy=default.target
+WantedBy=network-online.target
