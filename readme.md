@@ -22,6 +22,10 @@ Automated installation script coming soon ™
 
 **Manual install**
 ```sh
+# Dependencies (Arch Linux)
+sudo pacman -S --needed git python python-pip
+python -m pip install discord python-dotenv mcrcon
+
 # Main files
 mkdir ~/.config/systemd/
 mkdir ~/.config/systemd/user
