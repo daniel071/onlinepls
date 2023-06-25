@@ -68,7 +68,9 @@ class c:
 
 
 print(c.status + "Bot starting..." + c.reset)
-bot = commands.Bot(command_prefix=["pls ","Pls ","PLS ","please ","Please ","PLease ","PLEASE ", "pwease ", "Pwease ", "PWEASE "], help_command=None)
+intent = discord.Intents.default()
+intent.message_content = True
+bot = commands.Bot(command_prefix=["pls ","Pls ","PLS ","please ","Please ","PLease ","PLEASE ", "pwease ", "Pwease ", "PWEASE "], help_command=None, intents=intent)
 
 async def is_owner(ctx):
 	if ctx.author.id == os.getenv('OWNER_ID'):
